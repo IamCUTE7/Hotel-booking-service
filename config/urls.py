@@ -18,6 +18,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from bookings.views import index
+from bookings.views import BookingCreateView, index
 
-urlpatterns = [path("admin/", admin.site.urls), path("bookings", index)]
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("bookings", index),
+    path("apu/v1/Bookingslist", BookingCreateView.as_view()),
+]
