@@ -18,10 +18,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from bookings.views import BookingCreateView, index
+from bookings.views import (
+    BookingDeleteView,
+    BookingListCreateView,
+    BookingUpdateView,
+    RoomDeleteView,
+    RoomListCreateView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("bookings", index),
-    path("apu/v1/Bookingslist", BookingCreateView.as_view()),
+    path("api/v1/bookings/list/", BookingListCreateView.as_view()),
+    path("api/v1/bookings/create/", BookingListCreateView.as_view()),
+    path("api/v1/bookings/<int:pk>/delete/", BookingDeleteView.as_view()),
+    path("api/v1/bookings/<int:pk>/update/", BookingUpdateView.as_view()),
+    path("api/v1/rooms/list/", RoomListCreateView.as_view()),
+    path("api/v1/rooms/create/", RoomListCreateView.as_view()),
+    path("api/v1/rooms/<int:pk>/delete/", RoomDeleteView.as_view()),
 ]
