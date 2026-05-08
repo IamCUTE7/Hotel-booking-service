@@ -1,5 +1,5 @@
 # business logic
-from models import Booking
+from bookings.models import Booking
 
 
 def create_booking(room_id, start_date, end_date):
@@ -18,7 +18,7 @@ def check_availability(room_id, start_date, end_date, exclude_booking_id=None): 
     )  # particular booking
 
     if exclude_booking_id:
-        existing_booking.exclude(id=exclude_booking_id)
+        existing_booking = existing_booking.exclude(id=exclude_booking_id)
 
     if existing_booking.exists():
         return False
