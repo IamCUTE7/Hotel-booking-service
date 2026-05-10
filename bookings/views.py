@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 
 from .models import Booking, Room
 from .serializers import BookingSerializer, RoomSerializer
+from .services.booking_service import create_booking
 
 
 class BookingListCreateView(APIView):
@@ -20,15 +21,15 @@ class BookingListCreateView(APIView):
         serializer.is_valid(raise_exception=True)
 
         try:
-            serializer.create_booking(
+            booking = create_booking(
                 room_id=serializer.validated_data["room"].id,
                 start_date=serializer.validated_data["start_date"],
                 end_date=serializer.validated_data["end_date"],
             )
         except ValueError as error:
-            raise Response({"error": str(error)}, status=400)
+            return Response({"error": str(error)}, status=400)
 
-        return Response({"booking_id": serializer.instance.id})
+        return Response({"booking_id": booking.id})
 
 
 class BookingDeleteView(APIView):
