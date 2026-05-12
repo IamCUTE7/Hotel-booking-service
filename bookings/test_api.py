@@ -1,6 +1,13 @@
 import pytest
+from rest_framework.test import APIClient
 
 from bookings.models import Booking, Room
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
+
 
 pytestmark = pytest.mark.django_db
 
