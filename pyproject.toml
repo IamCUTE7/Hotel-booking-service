@@ -1,0 +1,42 @@
+[project]
+name = "hotel-booking-service"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Michael",email = "something@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12,<4.0"
+dependencies = [
+    "djangorestframework (>=3.17.1,<4.0.0)",
+    "environs (>=15.0.1,<16.0.0)",
+    "psycopg2-binary (>=2.9.12,<3.0.0)",
+    "django (>=6.0.4,<7.0.0)",
+    "loguru (>=0.7.3,<0.8.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.15.12,<0.16.0)",
+    "pytest (>=9.0.3,<10.0.0)",
+    "pre-commit (>=4.6.0,<5.0.0)",
+    "pytest-django (>=4.12.0,<5.0.0)"
+]
+rev = [
+    "ruff (>=0.15.12,<0.16.0)"
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
