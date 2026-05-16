@@ -18,13 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from bookings.views import (
+from bookings.booking_views import (
     BookingDeleteView,
     BookingListCreateView,
     BookingUpdateView,
-    RoomDeleteView,
-    RoomListCreateView,
 )
+from bookings.room_views import RoomDeleteView, RoomListCreateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
