@@ -1,6 +1,7 @@
 from loguru import logger
 
 from bookings.models import Booking
+from bookings.repositories.booking_repository import booking_repository
 
 
 class BookingService:
@@ -21,18 +22,15 @@ class BookingService:
 
         logger.info("Booking created! room_id={}, start_date={}, end_date={}", room_id, start_date, end_date)
 
-        return Booking.objects.create(room_id=room_id, start_date=start_date, end_date=end_date)
+        return booking_repository.create_booking(room_id, start_date, end_date)
 
     def get_bookings_by_room_id(self, room_id):
-        return Booking.objects.filter(room_id=room_id).order_by("start_date")
+        return booking_repository.get_bookings_by_room_id(room_id)
 
     def check_availability(self, room_id, start_date, end_date, exclude_booking_id=None):  # check room status
-        existing_booking = Booking.objects.filter(
-            room_id=room_id, start_date__lt=end_date, end_date__gt=start_date
+        existing_booking = booking_repository.get_overlapping_bookings(
+            room_id=room_id, start_date=start_date, end_date=end_date
         )  # particular booking
-
-        if exclude_booking_id:
-            existing_booking = existing_booking.exclude(id=exclude_booking_id)
 
         if existing_booking.exists():
             logger.warning(
@@ -47,16 +45,16 @@ class BookingService:
         return True
 
     def get_bookings(self, *room_ids):  # see one/multiple bookings
-        return Booking.objects.filter(room_id__in=room_ids)
+        return booking_repository.get_bookings_by_room_id(room_ids)
 
     def delete_booking(self, booking_id):
         try:
-            booking = Booking.objects.get(id=booking_id)
+            booking = booking_repository.get_booking_by_id(booking_id)
         except Booking.DoesNotExist:
             logger.warning("Such booking does not exist: booking_id={}", booking_id)
             raise ValueError("No such booking")
 
-        booking.delete()
+        booking_repository.delete_booking(booking)
 
         logger.info("The booking has been deleted: booking_id={}", booking_id)
 
@@ -74,7 +72,7 @@ class BookingService:
             raise ValueError("Invalid dates")
 
         try:
-            initial_booking = Booking.objects.get(id=booking_id)
+            initial_booking = booking_repository.get_booking_by_id(booking_id)
         except Booking.DoesNotExist:
             logger.warning("Such booking does not exist: booking_id={}", booking_id)
 
@@ -83,16 +81,15 @@ class BookingService:
         if not self.check_availability(initial_booking.room_id, start_date, end_date, exclude_booking_id=booking_id):
             raise ValueError("Room is occupied for these dates")
 
-        initial_booking.start_date = start_date
-        initial_booking.end_date = end_date
-
-        initial_booking.save(update_fields=["start_date", "end_date"])
+        update_booking = booking_repository.update_booking_dates(
+            booking=initial_booking, start_date=start_date, end_date=end_date
+        )
 
         logger.info(
             "The booking has been updated: room_id={}, start_date={}, end_date={}", booking_id, start_date, end_date
         )
 
-        return initial_booking
+        return update_booking
 
 
 booking_service = BookingService()
